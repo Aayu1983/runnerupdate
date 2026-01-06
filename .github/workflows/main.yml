@@ -15,7 +15,9 @@ jobs:
       - name: Show current runner version
         shell: powershell
         run: |
-          cd C:\actions-runner.\config.cmd --version
+          cd C:\actions-runner
+          .\config.cmd --version
+
 
       - name: Stop GitHub Actions runner service
         shell: powershell
