@@ -1,59 +1,41 @@
 name: Weekly Windows Self-Hosted Runner Update
 
 on:
-  # Schedule: Every day at 19:20 IST (13:50 UTC)
-  schedule:
-    # Every day at 20:15 IST → 14:45 UTC
-    - cron: '45 14 * * *'
-  workflow_dispatch: # allow manual triggerr
-  
+  #schedule:
+    # Every Sunday at 19:20 IST -> 13:50 UTC
+    #- cron: '50 13 * * 0'
+  workflow_dispatch: # Manual trigger capability
 
-permissions:  
+permissions:
   id-token: write
-  contents: read 
+  contents: read
 
 jobs:
   update-runner:
     name: Update Windows Self-Hosted Runner
-    runs-on: [self-hosted, windows] # Must run on Windows self-hosted runner
-
+    runs-on: [self-hosted, windows]
+    
     steps:
-      - name: Show OS
+      - name: Show Current Environment
         shell: powershell
         run: |
-          Write-Output "Running on:"
-          [System.Environment]::OSVersion
+          Write-Host "OS Version: $([System.Environment]::OSVersion)"
+          Write-Host "Runner Directory: C:\actions-runner"
 
-      - name: Show current runner version
+      - name: Install & Check Windows Updates (Dry Run/Download)
         shell: powershell
         run: |
-          # Navigate to runner folder and show version
-          Set-Location 'C:\actions-runner'
-          .\config.cmd --version
-
-      - name: Stop GitHub Actions runner service
-        shell: powershell
-        run: |
-          # Stop all runner services before update
-          Get-Service | Where-Object {$_.Name -like "actions.runner*"} | Stop-Service -Force
-
-      - name: Update GitHub Actions runner
-        shell: powershell
-        run: |
-          Set-Location 'C:\actions-runner'
-          .\run.cmd --update
-
-      - name: Start GitHub Actions runner service
-        shell: powershell
-        run: |
-          Get-Service | Where-Object {$_.Name -like "actions.runner*"} | Start-Service
-
-      - name: Install Windows Updates
-        shell: powershell
-        run: |
-          # Install PSWindowsUpdate module if not already installed
           if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
-              Install-Module PSWindowsUpdate -Force -Confirm:$false
+              Install-Module PSWindowsUpdate -Force -Confirm:$false -SkipPublisherCheck
           }
           Import-Module PSWindowsUpdate
-          # Install all available updates without reboot
+          # Downloads updates first to save time
+          Get-WindowsUpdate -Download -AcceptAll -Install -AutoReboot
+
+      - name: Update Runner Binary (Self-Update)
+        shell: powershell
+        run: |
+          # GitHub Runners usually auto-update, but this forces a check
+          cd C:\actions-runner
+          .\config.cmd --version
+          # Note: If the runner updates itself, it might restart the process.
