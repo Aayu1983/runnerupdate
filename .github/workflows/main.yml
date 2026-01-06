@@ -2,9 +2,13 @@ name: Weekly Windows Self-Hosted Runner Update
 
 on:
   schedule:
-  # Every day at 19:20 IST
-  - cron: '50 13 * * *'
+    # Every day at 19:20 IST
+    - cron: '50 13 * * *'
   workflow_dispatch:
+
+permissions:  
+  id-token: write   # typo fix: wright → write
+  contents: read 
 
 jobs:
   update-runner:
@@ -15,9 +19,9 @@ jobs:
       - name: Show current runner version
         shell: powershell
         run: |
-          cd C:\actions-runner
+          # Navigate to runner folder and show version
+          Set-Location 'C:\actions-runner'
           .\config.cmd --version
-
 
       - name: Stop GitHub Actions runner service
         shell: powershell
@@ -27,7 +31,7 @@ jobs:
       - name: Update GitHub Actions runner
         shell: powershell
         run: |
-          cd C:\actions-runner
+          Set-Location 'C:\actions-runner'
           .\run.cmd --update
 
       - name: Start GitHub Actions runner service
@@ -40,6 +44,7 @@ jobs:
         run: |
           Install-Module PSWindowsUpdate -Force -Confirm:$false
           Import-Module PSWindowsUpdate
+          # Install all updates without reboot
           Get-WindowsUpdate -Install -AcceptAll -IgnoreReboot
 
       - name: Reboot if required
