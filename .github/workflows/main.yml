@@ -1,21 +1,28 @@
 name: Weekly Windows Self-Hosted Runner Update
 
 on:
+  # Schedule: Every day at 19:20 IST (13:50 UTC)
   schedule:
-    # Every day at 19:20 IST
     - cron: '50 13 * * *'
+  # Allow manual trigger
   workflow_dispatch:
 
 permissions:  
-  id-token: write   # typo fix: wright → write
+  id-token: write
   contents: read 
 
 jobs:
   update-runner:
     name: Update Windows Self-Hosted Runner
-    runs-on: [self-hosted, windows]
+    runs-on: [self-hosted, windows] # Must run on Windows self-hosted runner
 
     steps:
+      - name: Show OS
+        shell: powershell
+        run: |
+          Write-Output "Running on:"
+          [System.Environment]::OSVersion
+
       - name: Show current runner version
         shell: powershell
         run: |
@@ -26,6 +33,7 @@ jobs:
       - name: Stop GitHub Actions runner service
         shell: powershell
         run: |
+          # Stop all runner services before update
           Get-Service | Where-Object {$_.Name -like "actions.runner*"} | Stop-Service -Force
 
       - name: Update GitHub Actions runner
@@ -42,17 +50,9 @@ jobs:
       - name: Install Windows Updates
         shell: powershell
         run: |
-          Install-Module PSWindowsUpdate -Force -Confirm:$false
-          Import-Module PSWindowsUpdate
-          # Install all updates without reboot
-          Get-WindowsUpdate -Install -AcceptAll -IgnoreReboot
-
-      - name: Reboot if required
-        shell: powershell
-        run: |
-          if (Get-WURebootStatus -Silent) {
-            Write-Output "Reboot required. Restarting..."
-            Restart-Computer -Force
-          } else {
-            Write-Output "No reboot required."
+          # Install PSWindowsUpdate module if not already installed
+          if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
+              Install-Module PSWindowsUpdate -Force -Confirm:$false
           }
+          Import-Module PSWindowsUpdate
+          # Install all available updates without reboot
