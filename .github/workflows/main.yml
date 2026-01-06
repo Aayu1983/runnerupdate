@@ -3,9 +3,10 @@ name: Weekly Windows Self-Hosted Runner Update
 on:
   # Schedule: Every day at 19:20 IST (13:50 UTC)
   schedule:
-    - cron: '50 13 * * *'
-  # Allow manual trigger
-  workflow_dispatch:
+    # Every day at 20:15 IST → 14:45 UTC
+    - cron: '45 14 * * *'
+  workflow_dispatch: # allow manual triggerr
+  
 
 permissions:  
   id-token: write
