@@ -37,3 +37,14 @@ jobs:
          Write-Host "KEEPALIVE_DIR = $env:KEEPALIVE_DIR"
          Get-ChildItem $env:KEEPALIVE_DIR
 
+      - name: Disk I/O task
+        shell: powershell
+        run: |
+         $file = Join-Path $env:KEEPALIVE_DIR "dummy.txt"
+         1...1000 | ForEach-Object { "Line $_ - $(Get-Date)" } | Set-Content -Path $file
+         Write-Host "Created file: $file"
+         $size = (Get-Item $file).Lenght
+         Write-Host "File size: $size bytes"
+
+         
+
