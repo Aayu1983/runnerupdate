@@ -2,7 +2,7 @@ name: Keep Runner Alive
 
 on:
   schedule: 
-  - cron: '15 11 7 1 *'
+    - cron: '15 11 7 1 *'
   workflow_dispatch: # Manual trigger capability
 
 permissions:
@@ -13,14 +13,11 @@ jobs:
   keep_alive:
     runs-on: [self-hosted, windows]
     timeout-minutes: 10
-    
-    steps:
-            
-     - name: Show runner information
-       shell: powershell
-       run: |
-          Write-Host "Runner Name:$env:RUNNER_NAME"
-          Write-Host "Runner OS:$env:RUNNER_OS"
-          Write-Host"Temp Directory:$env:RUNNER_TEMP"
 
-         
+    steps:
+      - name: Show runner information
+        shell: pwsh
+        run: |
+          Write-Host "Runner Name: $env:RUNNER_NAME"
+          Write-Host "Runner OS: $env:RUNNER_OS"
+          Write-Host "Temp Directory: $env:RUNNER_TEMP"
