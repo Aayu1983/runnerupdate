@@ -2,7 +2,7 @@ name: Keep Runner Alive
 
 on:
   schedule: 
-    - cron: '15 11 7 1 *'
+    - cron: '15 11 7 1 *'  # Adjust this cron if needed
   workflow_dispatch: # Manual trigger capability
 
 permissions:
@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Show runner information
-        shell: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+        shell: powershell
         run: |
           Write-Host "Runner Name: $env:RUNNER_NAME"
           Write-Host "Runner OS: $env:RUNNER_OS"
