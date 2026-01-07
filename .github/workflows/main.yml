@@ -26,6 +26,6 @@ jobs:
         shell: powershell
         run: |
          $dir = Join-Path $env:RUNNER_TEMP "keepalive"
-         New-Item -ItemTypeDirectory-Force-Path $dir| Out-Null
+         New-Item -ItemTypeDirectory-Force-Path $dir | Out-Null
          echo "KEEPALIVE_DIR=$dir"| Out-File-FilePath $env:GITHUB_ENV -Append
          Write-Host"Working in $dir"
