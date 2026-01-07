@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Show runner information
-        shell: pwsh
+        shell: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
         run: |
           Write-Host "Runner Name: $env:RUNNER_NAME"
           Write-Host "Runner OS: $env:RUNNER_OS"
