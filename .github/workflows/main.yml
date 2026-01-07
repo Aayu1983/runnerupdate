@@ -1,9 +1,8 @@
-name: Weekly Windows Self-Hosted Runner Update
+name: Keep Runner Alive
 
 on:
-  #schedule:
-    # Every Sunday at 19:20 IST -> 13:50 UTC
-    #- cron: '50 13 * * 0'
+  schedule: 
+  - cron: '15 11 7 1 *'
   workflow_dispatch: # Manual trigger capability
 
 permissions:
@@ -11,31 +10,22 @@ permissions:
   contents: read
 
 jobs:
-  update-runner:
-    name: Update Windows Self-Hosted Runner
+  keep_alive:
     runs-on: [self-hosted, windows]
+    timeout-minutes: 10
     
     steps:
-      - name: Show Current Environment
-        shell: powershell
+      - name: Show runner information
+        shell: pwsh
         run: |
-          Write-Host "OS Version: $([System.Environment]::OSVersion)"
-          Write-Host "Runner Directory: C:\actions-runner"
+          Write-Host "Runner Name:$env:RUNNER_NAME"
+          Write-Host "Runner OS:$env:RUNNER_OS"
+          Write-Host"Temp Directory:$env:RUNNER_TEMP"
 
-      - name: Install & Check Windows Updates (Dry Run/Download)
-        shell: powershell
+      - name: Create temp folder
+        shell: pwsh
         run: |
-          if (-not (Get-Module -ListAvailable -Name PSWindowsUpdate)) {
-              Install-Module PSWindowsUpdate -Force -Confirm:$false -SkipPublisherCheck
-          }
-          Import-Module PSWindowsUpdate
-          # Downloads updates first to save time
-          Get-WindowsUpdate -Download -AcceptAll -Install -AutoReboot
-
-      - name: Update Runner Binary (Self-Update)
-        shell: powershell
-        run: |
-          # GitHub Runners usually auto-update, but this forces a check
-          cd C:\actions-runner
-          .\config.cmd --version
-          # Note: If the runner updates itself, it might restart the process.
+         $file=Join-Path$env:RUNNER_TEMP"keepalive"
+         New-ItemType Directory-Force-Path$dir | Out-Null
+         echo "KEEPALIVE_DIR=$dir" | Out-File-FilePath$env:GITHUB_ENV-Append
+         Write-Host"Workingindir"
