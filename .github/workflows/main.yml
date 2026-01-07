@@ -21,3 +21,11 @@ jobs:
           Write-Host "Runner Name: $env:RUNNER_NAME"
           Write-Host "Runner OS: $env:RUNNER_OS"
           Write-Host "Temp Directory: $env:RUNNER_TEMP"
+
+      - name: Create temp folder
+        shell: powershell
+        run: |
+         $dir = Join-Path $env:RUNNER_TEMP "keepalive"
+         New-Item -ItemTypeDirectory-Force-Path $dir| Out-Null
+         echo "KEEPALIVE_DIR=$dir"| Out-File-FilePath $env:GITHUB_ENV -Append
+         Write-Host"Working in $dir"
