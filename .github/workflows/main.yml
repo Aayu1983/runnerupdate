@@ -1,9 +1,9 @@
-name: Keep Runner Alive (Windows Self-Hosted)
+name: Keep Runner Alive
 
 on:
-  schedule:
-    - cron: '15 11 7 1 *'   # 07 Jan, 16:45 IST (UTC time)
-  workflow_dispatch:
+  schedule: 
+  - cron: '15 11 7 1 *'
+  workflow_dispatch: # Manual trigger capability
 
 permissions:
   id-token: write
@@ -13,28 +13,17 @@ jobs:
   keep_alive:
     runs-on: [self-hosted, windows]
     timeout-minutes: 10
-
+    
     steps:
-      - name: Check PowerShell availability
-        shell: pwsh
-        run: |
-          if (Get-Command pwsh -ErrorAction SilentlyContinue) {
-            Write-Host " PowerShell (pwsh) is available"
-            Write-Host "PowerShell Version:"
-            $PSVersionTable.PSVersion
-          }
-          else {
-            Write-Error "PowerShell (pwsh) is NOT available"
-            exit 1
-          }
+            
+     - name: Show runner information
+       shell: pwsh
+       run: |
+          Write-Host "Runner Name:$env:RUNNER_NAME"
+          Write-Host "Runner OS:$env:RUNNER_OS"
+          Write-Host"Temp Directory:$env:RUNNER_TEMP"
 
-      - name: Show runner information
-        shell: pwsh
-        run: |
-          Write-Host "Runner Name : $env:RUNNER_NAME"
-          Write-Host "Runner OS   : $env:RUNNER_OS"
-          Write-Host "Machine Name: $env:COMPUTERNAME"
-          Write-Host "Temp Dir    : $env:RUNNER_TEMP"
-
-      - name: Create keep-alive temp folder
-        shell: pws
+            $file=Join-Path$env:RUNNER_TEMP"keepalive"
+         New-ItemType Directory-Force-Path$dir | Out-Null
+         echo "KEEPALIVE_DIR=$dir" | Out-File-FilePath$env:GITHUB_ENV-Append
+         Write-Host"Workingindir"
