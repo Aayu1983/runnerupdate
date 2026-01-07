@@ -28,4 +28,4 @@ jobs:
          $dir = Join-Path $env:RUNNER_TEMP "keepalive"
          New-Item -Path $dir -ItemType Directory -Force | Out-Null
          echo "KEEPALIVE_DIR=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append
-         Write-Host"Working in $dir"
+         Write-Host "Working in $dir
