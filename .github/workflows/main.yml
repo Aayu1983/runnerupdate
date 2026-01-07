@@ -23,7 +23,4 @@ jobs:
           Write-Host "Runner OS:$env:RUNNER_OS"
           Write-Host"Temp Directory:$env:RUNNER_TEMP"
 
-            $file=Join-Path$env:RUNNER_TEMP"keepalive"
-         New-ItemType Directory-Force-Path$dir | Out-Null
-         echo "KEEPALIVE_DIR=$dir" | Out-File-FilePath$env:GITHUB_ENV-Append
-         Write-Host"Workingindir"
+         
