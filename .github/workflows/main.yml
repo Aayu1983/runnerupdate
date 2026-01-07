@@ -2,7 +2,7 @@ name: Keep Runner Alive
 
 on:
   schedule: 
-    - cron: '15 11 7 1 *'  # Adjust this cron if needed
+    - cron: '25 14 * * *'  # Adjust this cron if needed
   workflow_dispatch: # Manual trigger capability
 
 permissions:
