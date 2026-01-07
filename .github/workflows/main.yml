@@ -29,3 +29,11 @@ jobs:
          New-Item -Path $dir -ItemType Directory -Force | Out-Null
          echo "KEEPALIVE_DIR=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append
          Write-Host "Working in $dir"
+
+
+      - name: Check temp folder
+        shell: powershell
+        run: |
+         Write-Host "KEEPALIVE_DIR = $env:KEEPALIVE_DIR"
+         Get-ChildItem $env:KEEPALIVE_DIR
+
