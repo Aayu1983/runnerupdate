@@ -49,7 +49,7 @@ jobs:
       - name: Network ping
         shell: powershell
         run: |
-         Write-Host:"Pinging github.com..."
+         Write-Host "Pinging github.com..."
          ping github.com
          Test-Connection github.com-Count 3 | Formate-Table-AutoSize
 
