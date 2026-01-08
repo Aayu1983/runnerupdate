@@ -59,8 +59,7 @@ jobs:
 
       - name: Cleanup
         shell: powershell
-        run: |
-          run: |
+        run: |        
           if (Test-Path $env:KEEPALIVE_DIR) {
               Remove-Item $env:KEEPALIVE_DIR -Recurse -Force
               Write-Host "Cleaned up $env:KEEPALIVE_DIR"
