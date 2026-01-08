@@ -60,8 +60,13 @@ jobs:
       - name: Cleanup
         shell: powershell
         run: |
-          Remove-Item $env:KEEPLIVE_DIR-Resource-Force
-          Write-Host "Cleaned up $env:KEEPLIVE_DIR"
+          run: |
+          if (Test-Path $env:KEEPALIVE_DIR) {
+              Remove-Item $env:KEEPALIVE_DIR -Recurse -Force
+              Write-Host "Cleaned up $env:KEEPALIVE_DIR"
+          } else {
+              Write-Host "Folder already deleted or does not exist."
+          }
           
           
           
