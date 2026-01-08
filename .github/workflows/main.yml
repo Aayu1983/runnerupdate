@@ -46,5 +46,27 @@ jobs:
          $size = (Get-Item $file).Lenght
          Write-Host "File size: $size bytes"
 
-         
+      - name: Network ping
+        shell: powershell
+        run: |
+         Write-Host:"Pinging githhub.com..."
+         Test-Connection github.com-Count 3 | Formate-Table-AutoSize
+
+      - name: Sleep for a few second
+        shell: powershell
+        run: Start-Sleep-Seconds 15
+
+      - name: Cleanup
+        shell: powershell
+        run: |
+          Remove-Item $env:KEEPLIVE_DIR-Resource-Force
+          Write-Host "Cleaned up $env:KEEPLIVE_DIR"
+          
+          
+          
+
+        
+
+
+        
 
