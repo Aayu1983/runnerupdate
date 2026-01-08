@@ -43,7 +43,7 @@ jobs:
          $file = Join-Path $env:KEEPALIVE_DIR "dummy.txt"
          1...1000 | ForEach-Object { "Line $_ - $(Get-Date)" } | Set-Content -Path $file
          Write-Host "Created file: $file"
-         $size = (Get-Item $file).Lenght
+         $size = (Get-Item $file).Length
          Write-Host "File size: $size bytes"
 
       - name: Network ping
@@ -51,11 +51,11 @@ jobs:
         run: |
          Write-Host "Pinging github.com..."
          ping github.com
-         Test-Connection github.com -Count 3 | Format-Table -AutoSizee
+         Test-Connection github.com -Count 3 | Format-Table -AutoSize
 
       - name: Sleep for a few second
         shell: powershell
-        run: Start-Sleep-Seconds 15
+        run: Start-Sleep -Seconds 15
 
       - name: Cleanup
         shell: powershell
