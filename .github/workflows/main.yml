@@ -51,7 +51,7 @@ jobs:
         run: |
          Write-Host "Pinging github.com..."
          ping github.com
-         Test-Connection github.com -Count 3 | Format-Table -AutoSize
+         Test-Connection github.com -Count 3 | Format-Table -AutoSizee
 
       - name: Sleep for a few second
         shell: powershell
