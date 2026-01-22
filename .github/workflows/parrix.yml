@@ -25,7 +25,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_IN_AUTOMATION: true
       TF_INPUT: false
-      WORK_DIR: ${{ github.workspace }}/${{ github.event.inputs.working_directory }}
+      WORK_DIR: ${{ github.event.inputs.working_directory }}
 
     steps:
       - name: Checkout repository
@@ -41,11 +41,11 @@ jobs:
           echo "Workspace:"
           Get-ChildItem $env:GITHUB_WORKSPACE
           echo "Terraform dir:"
-          Get-ChildItem $env:WORK_DIR
+          Get-ChildItem ${{ github.workspace }}
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
       - name: Terraform Validate
         run: terraform validate
@@ -78,7 +78,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_IN_AUTOMATION: true
       TF_INPUT: false
-      WORK_DIR: ${{ github.workspace }}/${{ github.event.inputs.working_directory }}
+      WORK_DIR: ${{ github.event.inputs.working_directory }}
 
     steps:
       - name: Checkout repository
@@ -91,8 +91,8 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ${{ env.WORK_DIR }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
