@@ -54,9 +54,9 @@ jobs:
       uses: little-core-labs/install-terraform@v2.0.0
       
     - name: Azure Login
-      uses: Azure/login@v2.3.0
-      with: 
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      uses: Azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
