@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   terraform: 
-    name: Terraform on Window Self-Host Runner
+    name: Terraform init and plan 
     runs-on: [self-hosted, Windows]
 
     env:
@@ -58,13 +58,19 @@ jobs:
         run: terraform plan
         working-directory: ${{ env.WORK_DIR }}
         
-  terraform-apply:
+  manual-approval:
     needs: terraform
     runs-on: ubuntu-latest
     environment: dev
     permissions:
       id-token: write
       contents: read
+
+
+  terraform-apply:
+    name: Terraform Apply (Windows Self-hosted)
+    needs: manual-approval
+    runs-on: [self-hosted, Windows] 
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
