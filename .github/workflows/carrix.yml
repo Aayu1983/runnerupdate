@@ -85,7 +85,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
       # 6️⃣ Terraform Apply
       - name: Terraform Apply
