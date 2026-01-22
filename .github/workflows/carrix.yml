@@ -44,7 +44,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-        working-directory: ${{ github.workspace }}${{ '/' }} ${{ github.event.inputs.working_directory }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
       # 7️⃣ Terraform Validate
       - name: Terraform Validate
@@ -85,10 +85,10 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-        working-directory: ${{ github.workspace }}${{ '/' }} ${{ github.event.inputs.working_directory }}}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}}
 
       # 6️⃣ Terraform Apply
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
-        working-directory: ${{ github.workspace }}${{ '/' }} ${{ github.event.inputs.working_directory }}}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}}
