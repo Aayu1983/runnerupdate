@@ -1,20 +1,23 @@
 name: "Aarrix infra pipeline"
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       working_directory:
         description: "Path to Terraform working directory"
         required: true
         default: "rg"
-        
+
 permissions:
   id-token: write
-  contents: read        
+  contents: read
 
 jobs:
-  terraform: 
-    name: Terraform init and plan 
+# ==============================
+# 1️⃣ Terraform Plan
+# ==============================
+  terraform:
+    name: Terraform Init & Plan
     runs-on: [self-hosted, Windows]
 
     env:
@@ -23,54 +26,56 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_IN_AUTOMATION: true
-      TF_INPUT : false
-      WORK_DIR: ${{ github.event.inputs.working_directory }}
+      TF_INPUT: false
+      WORK_DIR: ${{ github.workspace }}/${{ github.event.inputs.working_directory }}
 
     steps:
-      # 1️⃣ Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v4
 
-      # 2️⃣ Install Terraform
-      #- name: Install Terraform
-       # uses: little-core-labs/install-terraform@v2.0.0
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
 
-      - name: verify working directory
+      - name: Verify working directory
         run: |
-          Get-Childitem ${{ github.workspace }}
-       
+          echo "Workspace:"
+          Get-ChildItem $env:GITHUB_WORKSPACE
+          echo "Terraform dir:"
+          Get-ChildItem $env:WORK_DIR
 
-      # 6️⃣ Terraform Init
       - name: Terraform Init
-        id: init
         run: terraform init
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
+        working-directory: ${{ env.WORK_DIR }}
 
-      # 7️⃣ Terraform Validate
       - name: Terraform Validate
-        id: validate
         run: terraform validate
         working-directory: ${{ env.WORK_DIR }}
 
-      # 8️⃣ Terraform Plan
       - name: Terraform Plan
-        id: plan
         run: terraform plan
         working-directory: ${{ env.WORK_DIR }}
-        
+
+# ==============================
+# 2️⃣ Manual Approval
+# ==============================
   manual-approval:
+    name: Manual Approval
     needs: terraform
     runs-on: ubuntu-latest
-    environment: dev
-    permissions:
-      id-token: write
-      contents: read
+    environment: dev   # 👈 yahin approval rukega
+    steps:
+      - name: Waiting for approval
+        run: echo "Waiting for manual approval..."
 
-
+# ==============================
+# 3️⃣ Terraform Apply
+# ==============================
   terraform-apply:
-    name: Terraform Apply (Windows Self-hosted)
+    name: Terraform Apply
     needs: manual-approval
-    runs-on: [self-hosted, Windows] 
+    runs-on: [self-hosted, Windows]
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -78,29 +83,22 @@ jobs:
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_IN_AUTOMATION: true
-      TF_INPUT : false
-      WORK_DIR: ${{ github.event.inputs.working_directory }}
-      
-    steps:    
-      
-     # 1️⃣ Checkout code
-      - name: Checkout
-        uses: actions/checkout@v5.0.0
+      TF_INPUT: false
+      WORK_DIR: ${{ github.workspace }}/${{ github.event.inputs.working_directory }}
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6   
+          terraform_version: 1.6.6
 
-      # 5️⃣ Terraform Init 
       - name: Terraform Init
-        id: init
         run: terraform init
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
+        working-directory: ${{ env.WORK_DIR }}
 
-      # 6️⃣ Terraform Apply
       - name: Terraform Apply
-        id: apply
         run: terraform apply -auto-approve
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
+        working-directory: ${{ env.WORK_DIR }}
