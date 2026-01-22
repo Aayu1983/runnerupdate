@@ -20,8 +20,8 @@ jobs:
         uses: actions/checkout@v5.0.0
 
       # 2️⃣ Install Terraform
-      - name: Install Terraform
-        uses: little-core-labs/install-terraform@v2.0.0
+      #- name: Install Terraform
+       # uses: little-core-labs/install-terraform@v2.0.0
 
       # 3️⃣ Azure login
       - name: Azure Login
