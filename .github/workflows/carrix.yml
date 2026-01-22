@@ -1,0 +1,94 @@
+name: "basic infra pipeline"
+
+on: 
+  workflow_dispatch:
+    inputs:
+      working_directory:
+        description: "Path to Terraform working directory"
+        required: true
+        default: "rg"
+        
+permissions:
+  id-token: write
+  contents: read        
+
+jobs:
+  terraform: 
+    name: Terraform on Window Self-Host Runner
+    runs-on: [self-hosted, Windows]
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      TF_IN_AUTOMATION: true
+      TF_INPUT : false
+      WORK_DIR: ${{ github.event.inputs.working_directory }}
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
+
+      # 2️⃣ Install Terraform
+      #- name: Install Terraform
+       # uses: little-core-labs/install-terraform@v2.0.0
+
+      - name: verify working directory
+        run: |
+          Get-Childitem ${{ github.workspace }}
+       
+
+      # 6️⃣ Terraform Init
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ${{ github.workspace }}${{ '/' }} ${{ github.event.inputs.working_directory }}
+
+      # 7️⃣ Terraform Validate
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate
+        working-directory: ${{ env.WORK_DIR }}
+
+      # 8️⃣ Terraform Plan
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan
+        working-directory: ${{ env.WORK_DIR }}
+        
+  terraform-apply:
+    needs: terraform
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      contents: read
+
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      TF_IN_AUTOMATION: true
+      TF_INPUT : false
+      WORK_DIR: ${{ github.event.inputs.working_directory }}
+      
+    steps:    
+      
+     # 1️⃣ Checkout code
+      - name: Checkout
+        uses: actions/checkout@v5.0.0
+
+      # 5️⃣ Terraform Init (on Ubuntu runner)
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        working-directory: ${{ github.workspace }}${{ '/' }} ${{ github.event.inputs.working_directory }}}
+
+      # 6️⃣ Terraform Apply
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -auto-approve
+        working-directory: ${{ github.workspace }}${{ '/' }} ${{ github.event.inputs.working_directory }}}
