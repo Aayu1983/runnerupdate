@@ -59,7 +59,7 @@ jobs:
     runs-on: [self-hosted, Windows]
     environment:
       name: dev
-      url: https://example.com  # optional
+
 
     steps:
       # ✅ Manual Approval Step
