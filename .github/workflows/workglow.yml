@@ -6,7 +6,9 @@ on:
      working_directory :
        description: "Path to Terraform working directory"
        required: true
-       default: "runnerupdate/rg/"
+       default: "rg"
+
+       
 
 jobs:
   terraform-init-plan:
@@ -15,10 +17,13 @@ jobs:
       id-token: write
       contents: read
     steps:
+    
     - name: Checkout
       uses: actions/checkout@v5.0.0
     - name: Install Terraform
       uses: little-core-labs/install-terraform@v2.0.0
+
+      
       
     - name: Azure Login
       uses: Azure/login@v2
@@ -30,6 +35,12 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: 1.6.6
+    - name: Debug paths
+      shell: powershell
+      run: |
+       pwd
+       Get-ChildItem
+        Get-ChildItem rg
 
     - name: Terraform Init
       id: init
