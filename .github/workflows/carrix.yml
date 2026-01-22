@@ -91,4 +91,4 @@ jobs:
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
