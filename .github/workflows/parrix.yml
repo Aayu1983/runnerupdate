@@ -13,9 +13,7 @@ permissions:
   contents: read
 
 jobs:
-# ==============================
-# 1️⃣ Terraform Plan
-# ==============================
+
   terraform:
     name: Terraform Init & Plan
     runs-on: [self-hosted, Windows]
@@ -57,21 +55,17 @@ jobs:
         run: terraform plan
         working-directory: ${{ env.WORK_DIR }}
 
-# ==============================
-# 2️⃣ Manual Approval
-# ==============================
+
   manual-approval:
     name: Manual Approval
     needs: terraform
     runs-on: ubuntu-latest
-    environment: dev   # 👈 yahin approval rukega
+    environment: dev  
     steps:
       - name: Waiting for approval
         run: echo "Waiting for manual approval..."
 
-# ==============================
-# 3️⃣ Terraform Apply
-# ==============================
+
   terraform-apply:
     name: Terraform Apply
     needs: manual-approval
