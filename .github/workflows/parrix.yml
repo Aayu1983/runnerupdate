@@ -1,5 +1,3 @@
-name: "Parrix infra pipeline"
-
 on: 
   workflow_dispatch:
     inputs:
