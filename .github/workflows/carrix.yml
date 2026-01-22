@@ -1,4 +1,4 @@
-name: "basic infra pipeline"
+name: "Carrix infra pipeline"
 
 on: 
   workflow_dispatch:
