@@ -2,6 +2,11 @@ name: "basic infra pipeline"
 
 on: 
   workflow_dispatch:
+   inputs:
+     working_directory :
+       description: "Path to Terraform working directory"
+       required: true
+       default: "runnerupdate/rg/"
 
 jobs:
   terraform-init-plan:
@@ -29,7 +34,7 @@ jobs:
     - name: Terraform Init
       id: init
       run: terraform init 
-      # working-directory: 
+      working-directory: "runnerupdate/rg/"
       
     - name: Terraform Validate
       id: validate
@@ -66,6 +71,7 @@ jobs:
     - name: Terraform Init
       id: init
       run: terraform init
+      
 
     - name: Terraform Apply
       id: apply
