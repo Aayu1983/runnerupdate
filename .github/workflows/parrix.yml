@@ -27,11 +27,11 @@ jobs:
       WORK_DIR: ${{ github.event.inputs.working_directory }}
 
     steps:
-      # 1️⃣ Checkout code
+      #  Checkout code
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
 
-      # 2️⃣ Install Terraform
+      #  Install Terraform
       #- name: Install Terraform
        # uses: little-core-labs/install-terraform@v2.0.0
 
@@ -40,19 +40,19 @@ jobs:
           Get-Childitem ${{ github.workspace }}
        
 
-      # 6️⃣ Terraform Init
+      #  Terraform Init
       - name: Terraform Init
         id: init
         run: terraform init
         working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
-      # 7️⃣ Terraform Validate
+      #  Terraform Validate
       - name: Terraform Validate
         id: validate
         run: terraform validate
         working-directory: ${{ env.WORK_DIR }}
 
-      # 8️⃣ Terraform Plan
+      #  Terraform Plan
       - name: Terraform Plan
         id: plan
         run: terraform plan
@@ -78,7 +78,7 @@ jobs:
       
     steps:    
       
-     # 1️⃣ Checkout code
+     #  Checkout code
       - name: Checkout
         uses: actions/checkout@v5.0.0
 
@@ -88,13 +88,13 @@ jobs:
       #  with:
       #    terraform_version: 1.6.6   
 
-      # 5️⃣ Terraform Init 
+      #  Terraform Init 
       - name: Terraform Init
         id: init
         run: terraform init
         working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
-      # 6️⃣ Terraform Apply
+      #  Terraform Apply
       - name: Terraform Apply
         id: apply
         run: terraform apply -auto-approve
