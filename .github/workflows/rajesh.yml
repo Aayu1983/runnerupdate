@@ -67,29 +67,15 @@ jobs:
               Write-Host "Folder already deleted or does not exist."
           }
  
-  notify_on_failure:
-    runs-on: [self-hosted, Windows]
-    needs: keep_alive
-    if: ${{ failure() || cancelled() }}
-    steps:
-      - name: Send failure email
-        shell: powershell
-        env:
-          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          EMAIL_TO: ${{ secrets.EMAIL_TO }}
-        run: |
-          $smtpServer = $env:SMTP_SERVER
-          $smtpPort = [int]$env:SMTP_PORT
-          $smtpUser = $env:SMTP_USER
-          $smtpPass = $env:SMTP_PASS
-          $to = $env:EMAIL_TO
-          $subject = "Workflow Failed or Cancelled: Keep Runner Alive"
-          $body = "The workflow '${{ github.workflow }}' run #${{ github.run_number }} has failed or been cancelled.`nCheck logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
- 
-          $securePass = ConvertTo-SecureString $smtpPass -AsPlainText -Force
-          $cred = New-Object System.Management.Automation.PSCredential ($smtpUser, $securePass)
- 
-          Send-MailMessage -SmtpServer $smtpServer -Port $smtpPort -UseSsl -Credential $cred -From $smtpUser -To $to -Subject $subject -Body $body
+
+      - name: Notify owner via GitHub Issue (only if workflow fails)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Keep-alive workflow failed"
+
+
