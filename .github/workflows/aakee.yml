@@ -64,12 +64,12 @@ jobs:
               Write-Host "Folder already deleted or does not exist."
           }
 
-      # ✅ SUCCESS MESSAGE (runs only when keep_alive job succeeds)
+      # SUCCESS MESSAGE (runs only when keep_alive job succeeds)
       - name: Success message - Keep Runner Alive
         if: success()
         shell: powershell
         run: |
-          Write-Host "::notice title=Keep Runner Alive::✅ Workflow succeeded. Runner is alive."
+          Write-Host "::notice title=Keep Runner Alive:: Workflow succeeded. Runner is alive."
           Write-Host "Workflow: ${{ github.workflow }}"
           Write-Host "Run: #${{ github.run_number }}"
           Write-Host "Logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
