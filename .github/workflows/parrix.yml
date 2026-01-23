@@ -46,7 +46,7 @@ jobs:
         id: validate
         shell: pwsh
         working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
-        run: terraform validate
+        run: terraform validate 
 
       - name: Terraform Plan
         id: plan
