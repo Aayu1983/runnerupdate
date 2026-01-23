@@ -39,19 +39,19 @@ jobs:
       - name: Terraform Init
         id: init
         shell: pwsh
-        working-directory: ${{ github.workspace }}\${{ github.event.inputs.working_directory }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform init
 
       - name: Terraform Validate
         id: validate
         shell: pwsh
-        working-directory: ${{ github.workspace }}\${{ github.event.inputs.working_directory }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform validate
 
       - name: Terraform Plan
         id: plan
         shell: pwsh
-        working-directory: ${{ github.workspace }}\${{ github.event.inputs.working_directory }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform plan
 
   manual_validation:
@@ -84,11 +84,11 @@ jobs:
       - name: Terraform Init
         id: init
         shell: pwsh
-        working-directory: ${{ github.workspace }}\${{ github.event.inputs.working_directory }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform init
 
       - name: Terraform Apply
         id: apply
         shell: pwsh
-        working-directory: ${{ github.workspace }}\${{ github.event.inputs.working_directory }}
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform apply -auto-approve
