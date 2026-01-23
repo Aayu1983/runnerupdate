@@ -60,7 +60,7 @@ jobs:
         
   terraform-apply:
     needs: terraform
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows]
     environment: dev
     permissions:
       id-token: write
