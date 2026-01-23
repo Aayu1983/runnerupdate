@@ -15,7 +15,7 @@ jobs:
       - name: Show runner information
         shell: powershell
         run: |
-          Write-Host "Runner Name: $env:RUNNER_NAME
+          Write-Host "Runner Name: $env:RUNNER_NAME"
           Write-Host "Runner OS: $env:RUNNER_OS"
           Write-Host "Temp Directory: $env:RUNNER_TEMP"
 
