@@ -66,7 +66,7 @@ jobs:
   notify_on_failure:
     runs-on: [self-hosted, Windows]
     needs: keep_alive
-    if: ${{ needs.keep_alive.result != 'success' }}
+    if: ${{ failure() || cancelled() }}
     steps:
       - name: Send failure email
         shell: powershell
