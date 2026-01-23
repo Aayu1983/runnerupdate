@@ -97,7 +97,7 @@ jobs:
           $smtpPass   = $env:SMTP_PASS
           $to         = $env:EMAIL_TO
 
-          $subject = "❌ Workflow Failed or Cancelled: Keep Runner Alive"
+          $subject = "Workflow Failed or Cancelled: Keep Runner Alive"
           $body = "The workflow '${{ github.workflow }}' run #${{ github.run_number }} has failed or been cancelled.`nCheck logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
           $securePass = ConvertTo-SecureString $smtpPass -AsPlainText -Force
