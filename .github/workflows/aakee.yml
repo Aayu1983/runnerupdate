@@ -1,4 +1,4 @@
-name: Keep Runner Alive
+name: Keep Runner Alive with cron job
 
 on:
   schedule: 
