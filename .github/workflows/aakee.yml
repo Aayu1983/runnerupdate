@@ -1,9 +1,9 @@
 name: Keep Runner Alive
 
 on:
-  workflow_dispatch: # Manual trigger
-  schedule:
-    - cron: "*/5 * * * *"  # every 5 minutesy
+  schedule: 
+    - cron: '30 4 * * SUN'
+  workflow_dispatch:
 
 permissions:
   id-token: write
