@@ -1,8 +1,6 @@
 name: Keep Runner Alive
 
 on:
-  #schedule: 
-    #- cron: '*/5 * * * *'  # Adjust this cron if needed
   workflow_dispatch: # Manual trigger capability
 
 permissions:
@@ -13,7 +11,6 @@ jobs:
   keep_alive:
     runs-on: [self-hosted, Windows]
     timeout-minutes: 10
-
     steps:
       - name: Show runner information
         shell: powershell
@@ -25,53 +22,70 @@ jobs:
       - name: Create temp folder
         shell: powershell
         run: |
-         $dir = Join-Path $env:RUNNER_TEMP "keepalive"
-         New-Item -Path $dir -ItemType Directory -Force | Out-Null
-         echo "KEEPALIVE_DIR=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append
-         Write-Host "Working in $dir"
-
+          $dir = Join-Path $env:RUNNER_TEMP "keepalive"
+          New-Item -Path $dir -ItemType Directory -Force | Out-Null
+          echo "KEEPALIVE_DIR=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Write-Host "Working in $dir"
 
       - name: Check temp folder
         shell: powershell
         run: |
-         Write-Host "KEEPALIVE_DIR = $env:KEEPALIVE_DIR"
-         Get-ChildItem $env:KEEPALIVE_DIR
+          Write-Host "KEEPALIVE_DIR = $env:KEEPALIVE_DIR"
+          Get-ChildItem $env:KEEPALIVE_DIR
 
       - name: Disk I/O task
         shell: powershell
         run: |
-         $file = Join-Path $env:KEEPALIVE_DIR "dummy.txt"
-         1...1000 | ForEach-Object { "Line $_ - $(Get-Date)" } | Set-Content -Path $file
-         Write-Host "Created file: $file"
-         $size = (Get-Item $file).Length
-         Write-Host "File size: $size bytes"
+          $file = Join-Path $env:KEEPALIVE_DIR "dummy.txt"
+          1..1000 | ForEach-Object { "Line $_ - $(Get-Date)" } | Set-Content -Path $file
+          Write-Host "Created file: $file"
+          $size = (Get-Item $file).Length
+          Write-Host "File size: $size bytes"
 
       - name: Network ping
         shell: powershell
         run: |
-         Write-Host "Pinging github.com..."
-         ping github.com
-         Test-Connection github.com -Count 3 | Format-Table -AutoSize
+          Write-Host "Pinging github.com..."
+          ping github.com
+          Test-Connection github.com -Count 3 | Format-Table -AutoSize
 
-      - name: Sleep for a few second
+      - name: Sleep for a few seconds
         shell: powershell
         run: Start-Sleep -Seconds 15
 
       - name: Cleanup
         shell: powershell
-        run: |        
+        run: |
           if (Test-Path $env:KEEPALIVE_DIR) {
               Remove-Item $env:KEEPALIVE_DIR -Recurse -Force
               Write-Host "Cleaned up $env:KEEPALIVE_DIR"
           } else {
               Write-Host "Folder already deleted or does not exist."
           }
-          
-          
-          
 
-        
+  notify_on_failure:
+    runs-on: [self-hosted, Windows]
+    needs: keep_alive
+    if: ${{ failure() || cancelled() }}
+    steps:
+      - name: Send failure email
+        shell: powershell
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+        run: |
+          $smtpServer = $env:SMTP_SERVER
+          $smtpPort = [int]$env:SMTP_PORT
+          $smtpUser = $env:SMTP_USER
+          $smtpPass = $env:SMTP_PASS
+          $to = $env:EMAIL_TO
+          $subject = "Workflow Failed or Cancelled: Keep Runner Alive"
+          $body = "The workflow '${{ github.workflow }}' run #${{ github.run_number }} has failed or been cancelled.`nCheck logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
+          $securePass = ConvertTo-SecureString $smtpPass -AsPlainText -Force
+          $cred = New-Object System.Management.Automation.PSCredential ($smtpUser, $securePass)
 
-        
-
+          Send-MailMessage -SmtpServer $smtpServer -Port $smtpPort -UseSsl -Credential $cred -From $smtpUser -To $to -Subject $subject -Body $body
