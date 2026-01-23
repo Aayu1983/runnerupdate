@@ -1,42 +1,34 @@
-name: Keep Runner Alive Rajesh
- 
+name: Keep Runner Alive Rajesh 
 on:
   schedule: 
     - cron: '*/5 * * * *'
-  workflow_dispatch: 
- 
+  workflow_dispatch:  
 permissions:
   id-token: write
-  contents: read
- 
+  contents: read 
 jobs:
   keep_alive:
     runs-on: [self-hosted, Windows]
-    timeout-minutes: 10
- 
+    timeout-minutes: 10 
     steps:
       - name: Show runner information
         shell: powershell
         run: |
           Write-Host "Runner Name: $env:RUNNER_NAME"
           Write-Host "Runner OS: $env:RUNNER_OS"
-          Write-Host "Temp Directory: $env:RUNNER_TEMP"
- 
+          Write-Host "Temp Directory: $env:RUNNER_TEMP" 
       - name: Create temp folder
         shell: powershell
         run: |
          $dir = Join-Path $env:RUNNER_TEMP "keepalive"
          New-Item -Path $dir -ItemType Directory -Force | Out-Null
          echo "KEEPALIVE_DIR=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append
-         Write-Host "Working in $dir"
- 
- 
+         Write-Host "Working in $dir" 
       - name: Check temp folder
         shell: powershell
         run: |
          Write-Host "KEEPALIVE_DIR = $env:KEEPALIVE_DIR"
-         Get-ChildItem $env:KEEPALIVE_DIR
- 
+         Get-ChildItem $env:KEEPALIVE_DIR 
       - name: Disk I/O task
         shell: powershell
         run: |
@@ -44,19 +36,16 @@ jobs:
          1...1000 | ForEach-Object { "Line $_ - $(Get-Date)" } | Set-Content -Path $file
          Write-Host "Created file: $file"
          $size = (Get-Item $file).Length
-         Write-Host "File size: $size bytes"
- 
+         Write-Host "File size: $size bytes" 
       - name: Network connectivity check
         shell: powershell
         continue-on-error: true
         run: |
          Test-NetConnection github.com -Port 443
-         Invoke-WebRequest -UseBasicParsing https://github.com/robots.txt -TimeoutSec 20
- 
+         Invoke-WebRequest -UseBasicParsing https://github.com/robots.txt -TimeoutSec 20 
       - name: Sleep for a few second
         shell: powershell
-        run: Start-Sleep -Seconds 15
- 
+        run: Start-Sleep -Seconds 15 
       - name: Cleanup
         shell: powershell
         run: |        
@@ -65,9 +54,7 @@ jobs:
               Write-Host "Cleaned up $env:KEEPALIVE_DIR"
           } else {
               Write-Host "Folder already deleted or does not exist."
-          }
- 
-
+          } 
       - name: Notify owner via GitHub Issue (only if workflow fails)
         if: failure()
         uses: actions/github-script@v7
