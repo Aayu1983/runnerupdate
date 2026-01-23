@@ -17,14 +17,14 @@ jobs:
 
     steps:
       - name: Show runner information
-        shell: pwsh
+        shell: powershell
         run: |
           Write-Host "Runner Name: $env:RUNNER_NAME"
           Write-Host "Runner OS: $env:RUNNER_OS"
           Write-Host "Temp Directory: $env:RUNNER_TEMP"
 
       - name: Create temp folder
-        shell: pwsh
+        shell: powershell
         run: |
           $dir = Join-Path $env:RUNNER_TEMP "keepalive"
           New-Item -Path $dir -ItemType Directory -Force | Out-Null
@@ -32,13 +32,13 @@ jobs:
           Write-Host "Working in $dir"
 
       - name: Check temp folder
-        shell: pwsh
+        shell: powershell
         run: |
           Write-Host "KEEPALIVE_DIR = $env:KEEPALIVE_DIR"
           Get-ChildItem $env:KEEPALIVE_DIR
 
       - name: Disk I/O task
-        shell: pwsh
+        shell: powershell
         run: |
           $file = Join-Path $env:KEEPALIVE_DIR "dummy.txt"
           1..1000 | ForEach-Object { "Line $_ - $(Get-Date)" } | Set-Content -Path $file
@@ -48,7 +48,7 @@ jobs:
 
       - name: Success message (Keep Alive)
         if: success()
-        shell: pwsh
+        shell: powershell
         run: |
           Write-Host "::notice title=Keep Runner Alive::✅ Keep-alive job completed successfully."
           Write-Host "Run: #${{ github.run_number }}"
@@ -56,7 +56,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        shell: pwsh
+        shell: powershell
         run: |
           if (Test-Path $env:KEEPALIVE_DIR) {
             Remove-Item $env:KEEPALIVE_DIR -Recurse -Force
@@ -71,7 +71,7 @@ jobs:
     if: ${{ needs.keep_alive.result != 'success' }}
     steps:
       - name: Send failure email
-        shell: pwsh
+        shell: powershell
         env:
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
