@@ -58,7 +58,7 @@ jobs:
         run: terraform plan
         working-directory: ${{ env.WORK_DIR }}
         
-  terraform-apply:
+  manual_validation:
     needs: terraform
     runs-on: [self-hosted, Windows]
     environment: dev
