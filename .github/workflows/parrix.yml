@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   terraform: 
-    name: Terraform on Window Self-Host Runner
+    name: Terraform init and paln 
     runs-on: [self-hosted, Windows]
 
     env:
@@ -57,14 +57,21 @@ jobs:
         id: plan
         run: terraform plan
         working-directory: ${{ env.WORK_DIR }}
+
+  manual-approval:
+   name: Manual Approval
+   needs: terraform
+   runs-on: ubuntu-latest
+   environment: dev  
+   steps:
+      - name: Waiting for approval
+        run: echo "Waiting for manual approval..."
+        
         
   terraform-apply:
-    needs: terraform
-    runs-on: ubuntu-latest
-    environment: dev
-    permissions:
-      id-token: write
-      contents: read
+    name: Terraform Apply
+    needs: manual-approval
+    runs-on: [self-hosted, Windows]
 
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
