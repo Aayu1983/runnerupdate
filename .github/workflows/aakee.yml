@@ -1,9 +1,7 @@
-name: Keep Runner Alive in all condition 
+name: Keep Runner Alive
 
 on:
-  workflow_dispatch: # Manual trigger
-  schedule:
-    - cron: "*/5 * * * *"  # every 5 minutes
+  workflow_dispatch: # Manual trigger capability
 
 permissions:
   id-token: write
@@ -56,7 +54,6 @@ jobs:
         run: Start-Sleep -Seconds 15
 
       - name: Cleanup
-        if: always()
         shell: powershell
         run: |
           if (Test-Path $env:KEEPALIVE_DIR) {
@@ -66,20 +63,10 @@ jobs:
               Write-Host "Folder already deleted or does not exist."
           }
 
-      # SUCCESS MESSAGE (runs only when keep_alive job succeeds)
-      - name: Success message - Keep Runner Alive
-        if: success()
-        shell: powershell
-        run: |
-          Write-Host "::notice title=Keep Runner Alive:: Workflow succeeded. Runner is alive."
-          Write-Host "Workflow: ${{ github.workflow }}"
-          Write-Host "Run: #${{ github.run_number }}"
-          Write-Host "Logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
   notify_on_failure:
     runs-on: [self-hosted, Windows]
     needs: keep_alive
-    if: ${{ needs.keep_alive.result != 'success' }}
+    if: ${{ failure() || cancelled() }}
     steps:
       - name: Send failure email
         shell: powershell
@@ -90,15 +77,11 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
         run: |
-          # Optional but helpful on Windows PowerShell
-          [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
           $smtpServer = $env:SMTP_SERVER
-          $smtpPort   = [int]$env:SMTP_PORT
-          $smtpUser   = $env:SMTP_USER
-          $smtpPass   = $env:SMTP_PASS
-          $to         = $env:EMAIL_TO
-
+          $smtpPort = [int]$env:SMTP_PORT
+          $smtpUser = $env:SMTP_USER
+          $smtpPass = $env:SMTP_PASS
+          $to = $env:EMAIL_TO
           $subject = "Workflow Failed or Cancelled: Keep Runner Alive"
           $body = "The workflow '${{ github.workflow }}' run #${{ github.run_number }} has failed or been cancelled.`nCheck logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
