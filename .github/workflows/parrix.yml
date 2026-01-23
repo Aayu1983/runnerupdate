@@ -28,31 +28,36 @@ jobs:
       WORK_DIR: ${{ github.event.inputs.working_directory }}
 
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
 
-      - name: Verify working directory
-        shell: pwsh
+      # 2️⃣ Install Terraform
+      #- name: Install Terraform
+       # uses: little-core-labs/install-terraform@v2.0.0
+
+      - name: verify working directory
         run: |
-          Get-ChildItem "${{ github.workspace }}"
+          Get-Childitem ${{ github.workspace }}
+       
 
+      # 6️⃣ Terraform Init
       - name: Terraform Init
         id: init
-        shell: pwsh
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform init
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
+      # 7️⃣ Terraform Validate
       - name: Terraform Validate
         id: validate
-        shell: pwsh
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
-        run: terraform validate 
+        run: terraform validate
+        working-directory: ${{ env.WORK_DIR }}
 
+      # 8️⃣ Terraform Plan
       - name: Terraform Plan
         id: plan
-        shell: pwsh
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform plan
+        working-directory: ${{ env.WORK_DIR }}
 
   manual_validation:
     name: Manual Validation (Environment Approval)
@@ -83,12 +88,10 @@ jobs:
 
       - name: Terraform Init
         id: init
-        shell: pwsh
-        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform init
+        working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
       - name: Terraform Apply
-        id: apply
-        shell: pwsh
+        id: apply        
         working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
         run: terraform apply -auto-approve
