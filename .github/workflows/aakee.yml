@@ -1,4 +1,4 @@
-name: Keep Runner Alive for client 
+name: Keep Runner Alive
 
 on:
   schedule: 
