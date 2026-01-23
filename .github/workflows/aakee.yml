@@ -1,12 +1,12 @@
-name: Keep Runner Alive fix
-
+name: Keep Runner Alive final
+ 
 on:
   workflow_dispatch: # Manual trigger capability
-
+ 
 permissions:
   id-token: write
   contents: read
-
+ 
 jobs:
   keep_alive:
     runs-on: [self-hosted, Windows]
@@ -18,7 +18,7 @@ jobs:
           Write-Host "Runner Name: $env:RUNNER_NAME
           Write-Host "Runner OS: $env:RUNNER_OS"
           Write-Host "Temp Directory: $env:RUNNER_TEMP"
-
+ 
       - name: Create temp folder
         shell: powershell
         run: |
@@ -26,13 +26,13 @@ jobs:
           New-Item -Path $dir -ItemType Directory -Force | Out-Null
           echo "KEEPALIVE_DIR=$dir" | Out-File -FilePath $env:GITHUB_ENV -Append
           Write-Host "Working in $dir"
-
+ 
       - name: Check temp folder
         shell: powershell
         run: |
           Write-Host "KEEPALIVE_DIR = $env:KEEPALIVE_DIR"
           Get-ChildItem $env:KEEPALIVE_DIR
-
+ 
       - name: Disk I/O task
         shell: powershell
         run: |
@@ -41,18 +41,18 @@ jobs:
           Write-Host "Created file: $file"
           $size = (Get-Item $file).Length
           Write-Host "File size: $size bytes"
-
+ 
       - name: Network ping
         shell: powershell
         run: |
           Write-Host "Pinging github.com..."
           ping github.com
           Test-Connection github.com -Count 3 | Format-Table -AutoSize
-
+ 
       - name: Sleep for a few seconds
         shell: powershell
         run: Start-Sleep -Seconds 15
-
+ 
       - name: Cleanup
         shell: powershell
         run: |
@@ -62,7 +62,7 @@ jobs:
           } else {
               Write-Host "Folder already deleted or does not exist."
           }
-
+ 
   notify_on_failure:
     runs-on: [self-hosted, Windows]
     needs: keep_alive
@@ -84,8 +84,8 @@ jobs:
           $to = $env:EMAIL_TO
           $subject = "Workflow Failed or Cancelled: Keep Runner Alive"
           $body = "The workflow '${{ github.workflow }}' run #${{ github.run_number }} has failed or been cancelled.`nCheck logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
+ 
           $securePass = ConvertTo-SecureString $smtpPass -AsPlainText -Force
           $cred = New-Object System.Management.Automation.PSCredential ($smtpUser, $securePass)
-
+ 
           Send-MailMessage -SmtpServer $smtpServer -Port $smtpPort -UseSsl -Credential $cred -From $smtpUser -To $to -Subject $subject -Body $body
