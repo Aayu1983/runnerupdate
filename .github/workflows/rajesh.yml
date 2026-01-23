@@ -2,7 +2,7 @@ name: Keep Runner Alive Cx
  
 on:
   schedule: 
-    - cron: '30 4 * * SUN'
+    - cron: '*/5 * * * *'
   workflow_dispatch: 
  
 permissions:
