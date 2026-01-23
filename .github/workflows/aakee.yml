@@ -1,9 +1,7 @@
-name: Keep Runner Alive with cron job
+name: Keep Runner Alive fix
 
 on:
-  schedule: 
-    - cron: '30 4 * * SUN'
-  workflow_dispatch:
+  workflow_dispatch: # Manual trigger capability
 
 permissions:
   id-token: write
