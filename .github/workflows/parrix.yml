@@ -47,13 +47,13 @@ jobs:
         run: terraform init
         working-directory: ${{ github.workspace }}${{ '/' }}${{ github.event.inputs.working_directory }}
 
-      # 7️⃣ Terraform Validate
+      #  Terraform Validate
       - name: Terraform Validate
         id: validate
         run: terraform validate
         working-directory: ${{ env.WORK_DIR }}
 
-      # 8️⃣ Terraform Plan
+      #  Terraform Plan
       - name: Terraform Plan
         id: plan
         run: terraform plan
